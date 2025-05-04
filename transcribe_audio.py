@@ -25,6 +25,18 @@ model = whisper.load_model("base")  # Options: tiny, base, small, medium, large
 result = model.transcribe(converted_file, language=language)
 text = result["text"]
 
+# === FORMAT TEXT WITH TIMESTAMPS AND LINE BREAKS ===
+def format_timestamp(seconds):
+    minutes = int(seconds // 60)
+    secs = seconds % 60
+    return f"[{minutes:02}:{secs:05.2f}]"
+
+lines = [
+    f"{format_timestamp(segment['start'])} {segment['text'].strip()}"
+    for segment in result["segments"]
+]
+text = "\n".join(lines)
+
 # === SAVE TRANSCRIPTION TO FILE ===
 with open(output_txt, "w", encoding="utf-8") as f:
     f.write(text)
